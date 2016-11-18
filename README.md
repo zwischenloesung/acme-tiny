@@ -1,7 +1,7 @@
 Acme-Tiny
 =========
 
-This is an ansible role for getting digital certificates with "Let's Encrypt". It is highly influenced by this role: ganto.acme\_tiny. Many thanks ganto!
+This is an ansible role for getting digital certificates with "Let's Encrypt". It is highly influenced by this role: ganto.acme\_tiny. Many thanks [ganto](https://linuxmonk.ch/)!
 
 Why we do not use one of the existing roles?
 
