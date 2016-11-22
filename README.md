@@ -10,6 +10,14 @@ Why we do not use one of the existing roles?
 * For the first reason read the section "Promise" below. We need something reliable.
 * This role will be used by [maestro](https://github.com/inofix/maestro) and must follow the logic used there. (Of course, the role can be used without maestro..)
 
+TODO
+----
+
+* Finish merging of the resulting certificates
+* Adding a cron job to resign the certs every 60 days
+* Think about a way to use a proxy server and send around csr but no keys
+* Write a role to connect acme-tiny to different services directly
+
 Promise
 -------
 
