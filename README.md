@@ -3,6 +3,8 @@ Acme-Tiny
 
 This is an ansible role for getting digital certificates with "Let's Encrypt". It is highly influenced by this role: ganto.acme\_tiny. Many thanks [ganto](https://linuxmonk.ch/)!
 
+The role is meant to be run for a system accessible from the web. It will make the request with "Let's Encrypt", solve the challenge on the server's wellknown webfolder and then put the resulting certificates in the openssl configuration directory.
+
 Why we do not use one of the existing roles?
 
 * For the first reason read the section "Promise" below. We need something reliable.
@@ -24,16 +26,27 @@ Requirements
 ------------
 
 * Ansible >2.0
-* Python2/3 on target host
-* Generic UNIX with FHS
-* Sudo
-* Systemd (per default)
+* On target host
+ * Running webserver with ^/.well-known/acme-challenge/ directory accessible (hardcoded in acme-tiny script..)
+ * Generic UNIX with FHS
+ * Python2/3
+ * OpenSSL
+ * Sudo
+ * Systemd (per default)
 
 Role Variables
 --------------
 
-* app\_\_acme\_\_tiny\_\_user (optional, string: default="acme")
-* app\_\_acme\_\_tiny\_\_group (optional, string: default="acme")
+* app\_\_acme\_\_tiny\_\_user - optional, default='acme'
+* app\_\_acme\_\_tiny\_\_group - optional, default='acme'
+* app\_\_acme\_\_tiny\_\_config\_dir - optional, default='/etc/ssl/acme-tiny'
+* app\_\_acme\_\_tiny\_\_account\_key - optional, auto
+* app\_\_acme\_\_tiny\_\_challenge\_dir - optional, default='/var/www/acme-challenge'
+* app\_\_acme\_\_tiny\_\_domain - optional, default='example.com'
+* app\_\_acme\_\_tiny\_\_cert\_name - optional, auto
+* app\_\_acme\_\_tiny\_\_cert\_dir - optional, auto
+* app\_\_acme\_\_tiny\_\_key - optional, auto
+* app\_\_acme\_\_tiny\_\_request - optional, auto
 
 Dependencies
 ------------

@@ -1,2 +1,46 @@
 ---
 # tasks file for acme-tiny/
+
+- name: Create an empty cert that the acme user is able to write
+  file:
+    state: touch
+    path: '{{ app__acme__tiny__certificate }}'
+    owner: '{{ app__acme__tiny__user }}'
+    group: '{{ app__acme__tiny__group }}'
+    mode: '0644'
+
+- name: Run acme-tiny
+  become: True
+  become_user: '{{ app__acme__tiny__user }}'
+  shell: 'acme-tiny --account-key {{ app__acme__tiny__account_key }} --csr {{ app__acme__tiny__request }} --acme-dir {{ app__acme__tiny__challenge_dir }} > {{ app__acme__tiny__certificate }}'
+  register: acme_tiny__register_certificate
+  failed_when: False
+
+- name: Show acme-tiny output
+  debug: var=acme_tiny__register_certificate
+  when: not ansible_check_mode|d()
+  failed_when: ("rc" in acme_tiny__register_certificate) and
+               (not acme_tiny__register_certificate.rc == 0)
+
+#- name: Merge certificate/key to PEM file - always create the PEM and..
+#  become: True
+#  become_user: '{{ app__acme__tiny__user }}'
+#  shell: 'uname 077 && cat {{ app__acme__tiny__key }} {{ app__acme__tiny__certificate }} > {{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_keycert.pem'
+#  when: app__acme__tiny__register_certificate | changed
+
+#- name: Merge certificate chain - always create a chain file too..
+#  become: True
+#  become_user: '{{ app__acme__tiny__user_name }}'
+#  shell: 'uname 077 && cat {{ app__acme__tiny__certificate }} {{ app__acme__tiny__config_dir }}/{intermediate.crt,ca.crt} > {{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_chain.crt'
+#  when: app__acme__tiny__register_certificate | changed
+
+#- name: Fix PEM file permissions
+#  file:
+#    path: '{{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_keycert.pem'
+#    mode: '0600'
+
+#- name: Fix chain file permissions
+#  file:
+#    path: '{{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_chain.pem'
+#    mode: '0600'
+

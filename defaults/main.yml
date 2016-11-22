@@ -1,2 +1,28 @@
 ---
 # defaults file for acme-tiny/
+
+app__acme__tiny__user: 'acme'
+app__acme__tiny__group: 'acme'
+
+
+app__acme__tiny__config_dir: '/etc/ssl/acme-tiny'
+app__acme__tiny__account_key: '{{ app__acme__tiny__config_dir }}/account.key'
+
+app__acme__tiny__challenge_dir: '/var/www/acme-challenge'
+
+app__acme__tiny__domain: 'example.com'
+
+app__acme__tiny__cert_name: '{{ app__acme__tiny__domain[0]
+                          if (app__acme__tiny__domain is iterable and
+                              not app__acme__tiny__domain is string)
+                          else app__acme__tiny__domain }}'
+
+app__acme__tiny__cert_dir: '{{ app__acme__tiny__config_dir }}/{{ app__acme__tiny__cert_name }}'
+
+app__acme__tiny__key: '{{ app__acme__tiny__config_dir }}/{{ app__acme__tiny__cert_name }}.key'
+app__acme__tiny__request: '{{ app__acme__tiny__config_dir }}/{{ app__acme__tiny__cert_name }}.csr'
+app__acme__tiny__certificate: '{{ app__acme__tiny__config_dir }}/{{ app__acme__tiny__cert_name }}.crt'
+
+
+## quick and dirty way to produce the role vars for the README:
+##$ cat defaults/main.yml | grep -v "#" | awk 'BEGIN{meta="default="}; {if (match($1, "app.*")) { if (sub(".*{{.*", "", $2)){meta="auto"} else {meta="default="$2}; gsub("_", "\\_"); sub(":", "", $1); print "* "$1" - optional, "meta""} else {print $0}}' | grep -v -e "\*  - optional, string: default=" -e " *if" -e " *not" -e " *else" -e "^$"
