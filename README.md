@@ -3,9 +3,9 @@ Acme-Tiny
 
 This is an ansible role for getting digital certificates with "Let's Encrypt". It is highly influenced by this role: ganto.acme\_tiny. Many thanks [ganto](https://linuxmonk.ch/)!
 
-The role is meant to be run for a system accessible from the web. It will make the request with "Let's Encrypt", solve the challenge on the server's wellknown webfolder and then put the resulting certificates in the openssl configuration directory.
+The role is meant to be run for a system accessible from the web. It will make the request with "Let's Encrypt" from an existing csr (see acme-tiny-setup), solve the challenge on the server's well-known webfolder and then put the resulting certificates in the openssl configuration directory.
 
-The two other roles zwischenloesung.acme-tiny-install and zwischenloesung.acme-tiny-setup are required. The latter might be run on yet another remote host as to generate the cert-request.
+The two other roles zwischenloesung.acme-tiny-install and zwischenloesung.acme-tiny-setup are required. The latter might be run on yet another remote host as to generate the private key and the cert-request.
 
 Why we do not use one of the existing roles?
 
