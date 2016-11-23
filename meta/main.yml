@@ -18,4 +18,6 @@ galaxy_info:
     - ssl:tls
     - system
 
-dependencies: []
+dependencies:
+  - zwischenloesung.acme-tiny-install
+  - zwischenloesung.acme-tiny-setup
