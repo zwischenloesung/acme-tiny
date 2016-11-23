@@ -45,7 +45,7 @@ Requirements
  * OpenSSL
  * Sudo
  * Running webserver with ^/.well-known/acme-challenge/ directory accessible (hardcoded in acme-tiny script..)
- * The webserver must serve HTTP (not just HTTPS; requirement of acme-tiny/let's-encrypt)
+ * The webserver must serve HTTP, even for consequent certificates (not just HTTPS; requirement of acme-tiny/let's-encrypt)
  * Resolve all names in the cert to localhost or the local-IP
 
 Role Variables
