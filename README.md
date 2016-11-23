@@ -5,10 +5,15 @@ This is an ansible role for getting digital certificates with "Let's Encrypt". I
 
 The role is meant to be run for a system accessible from the web. It will make the request with "Let's Encrypt", solve the challenge on the server's wellknown webfolder and then put the resulting certificates in the openssl configuration directory.
 
+The two other roles zwischenloesung.acme-tiny-install and zwischenloesung.acme-tiny-setup are required. The latter might be run on yet another remote host as to generate the cert-request.
+
 Why we do not use one of the existing roles?
 
 * For the first reason read the section "Promise" below. We need something reliable.
 * This role will be used by [maestro](https://github.com/inofix/maestro) and must follow the logic used there. (Of course, the role can be used without maestro..)
+* The role does not connect to the web as root, but as an unpriviledged user
+* The role does not expose the private key file to the unpriviledged acme user
+* The cert-request might be done on a remote machine via zwischenloesung.acme-tiny-setup such that the private key is not even on the host requesting the certificate.
 
 TODO
 ----
@@ -21,7 +26,7 @@ TODO
 Promise
 -------
 
-Sure this role may change in the future, but we will only expand features to not break backwards compatibility.
+Sure, this role may change in the future, but we will only expand features to not break backwards compatibility.
 
 If radical changes should become necessary, a new role will be created, probably with an 'ng' or version suffix...
 
