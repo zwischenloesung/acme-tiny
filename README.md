@@ -40,14 +40,13 @@ Requirements
 
 * Ansible >2.0
 * On target host
- * Running webserver with ^/.well-known/acme-challenge/ directory accessible (hardcoded in acme-tiny script..)
- * The webserver must serve HTTP (not just HTTPS)
- * Resolve all names in the cert to localhost or a local-IP
  * Generic UNIX with FHS
  * Python2/3
  * OpenSSL
  * Sudo
- * Systemd (per default)
+ * Running webserver with ^/.well-known/acme-challenge/ directory accessible (hardcoded in acme-tiny script..)
+ * The webserver must serve HTTP (not just HTTPS; requirement of acme-tiny/let's-encrypt)
+ * Resolve all names in the cert to localhost or the local-IP
 
 Role Variables
 --------------
@@ -65,6 +64,9 @@ Role Variables
 
 Dependencies
 ------------
+
+* zwischenloesung.acme-tiny-install
+* zwischenloesung.acme-tiny-setup
 
 Example Playbook
 ----------------
