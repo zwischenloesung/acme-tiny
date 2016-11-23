@@ -21,9 +21,14 @@ install:
   # Create ansible.cfg with correct roles_path
   - printf '[defaults]\nroles_path=../' >ansible.cfg
 
+  # Install missing dependencies
+  - ansible-galaxy install zwischenloesung.acme-tiny-install
+  - ansible-galaxy install zwischenloesung.acme-tiny-setup
+
 script:
   # Basic role syntax check
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
+
