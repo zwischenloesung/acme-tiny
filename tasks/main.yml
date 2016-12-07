@@ -28,7 +28,7 @@
     remote_src: True
     src: '{{ app__acme__tiny__certificate }}'
     dest: '{{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}.crt'
-    owner: 'root'
+    owner: '{{ app__acme__tiny__user }}'
     group: '{{ app__acme__os__cert_group }}'
     mode: '0644'
   when: acme_tiny__register_certificate | changed
@@ -37,7 +37,7 @@
   file:
     path: '{{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_chain.crt'
     state: touch
-    owner: 'root'
+    owner: '{{ app__acme__tiny__user }}'
     group: '{{ app__acme__os__cert_group }}'
     mode: '0644'
   when: acme_tiny__register_certificate | changed
