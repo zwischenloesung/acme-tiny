@@ -1,7 +1,7 @@
 ---
 # tasks file for acme-tiny/
 
-- name: Create an empty cert that the acme user is able to write
+- name: 'Create an empty (or just touch) cert user "acme" is able to write'
   file:
     state: touch
     path: '{{ app__acme__tiny__certificate }}'
@@ -9,39 +9,71 @@
     group: '{{ app__acme__tiny__group }}'
     mode: '0644'
 
-- name: Run acme-tiny
+- name: 'Run acme-tiny'
   become: True
   become_user: '{{ app__acme__tiny__user }}'
   shell: 'acme-tiny --account-key {{ app__acme__tiny__account_key }} --csr {{ app__acme__tiny__request }} --acme-dir {{ app__acme__tiny__challenge_dir }} > {{ app__acme__tiny__certificate }}'
   register: acme_tiny__register_certificate
   failed_when: False
 
-- name: Show acme-tiny output
+- name: 'Show acme-tiny output'
   debug: var=acme_tiny__register_certificate
   when: not ansible_check_mode|d()
   failed_when: ("rc" in acme_tiny__register_certificate) and
                (not acme_tiny__register_certificate.rc == 0)
 
-- name: Merge certificate chain - always create a chain file too..
-  become: True
-  become_user: '{{ app__acme__tiny__user_name }}'
-  shell: 'cat {{ app__acme__tiny__certificate }} {{ app__acme__tiny__config_dir }}/{intermediate,ca}.crt > {{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_chain.crt'
-  when: app__acme__tiny__register_certificate | changed
-
-- name: Grant chain file permissions
-  file:
-    path: '{{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_chain.pem'
+# Rebundle the result for all the different service flavours
+- name: 'Create a consumable cert copy for the system'
+  copy:
+    remote_src: True
+    src: '{{ app__acme__tiny__certificate }}'
+    dest: '{{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}.crt'
+    owner: 'root'
+    group: '{{ app__acme__os__cert_group }}'
     mode: '0644'
+  when: acme_tiny__register_certificate | changed
 
-## This is a task for the consuming service..
-#- name: Merge certificate/key to PEM file
-#  become: True
-#  become_user: '{{ app__acme__tiny__user }}'
-#  shell: 'uname 077 && cat {{ app__acme__tiny__key }} {{ app__acme__tiny__certificate }} > {{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_keycert.pem'
-#  when: app__acme__tiny__register_certificate | changed
-#
-#- name: Fix PEM file permissions
-#  file:
-#    path: '{{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_keycert.pem'
-#    mode: '0600'
+- name: 'Create an empty (or just touch) chain file "acme" is able to write'
+  file:
+    path: '{{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_chain.crt'
+    state: touch
+    owner: 'root'
+    group: '{{ app__acme__os__cert_group }}'
+    mode: '0644'
+  when: acme_tiny__register_certificate | changed
+
+- name: 'Merge certificate chain'
+  become: True
+  become_user: '{{ app__acme__tiny__user }}'
+  shell: 'cat {{ app__acme__tiny__certificate }} {{ app__acme__tiny__config_dir }}/intermediate.crt {{ app__acme__tiny__config_dir }}/ca.crt > {{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_chain.crt'
+  when: acme_tiny__register_certificate | changed
+
+# If now key is available, this means that the key is on a separate host and
+# this host must organize its cert chain after catching the cert here.
+- name: 'Test if a private key is available'
+  stat:
+    path: '{{ app__acme__tiny__key }}'
+  register: acme_tiny__key
+
+- name: 'Create a consumer key file'
+  copy:
+    remote_src: True
+    src: '{{ app__acme__tiny__key }}'
+    dest: '{{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}.key'
+    owner: 'root'
+    group: '{{ app__acme__os__cert_group }}'
+    mode: '0640'
+  when: ( acme_tiny__register_certificate | changed ) and ( acme_tiny__key.stat.isreg is defined and acme_tiny__key.stat.isreg )
+
+- name: 'Merge the consumer key/cert file'
+  shell: 'umask 077 && cat {{ app__acme__tiny__key }} {{ app__acme__tiny__certificate }} > {{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_keycert.pem'
+  when: ( acme_tiny__register_certificate | changed ) and ( acme_tiny__key.stat.isreg is defined and acme_tiny__key.stat.isreg )
+
+- name: 'Fix permissions of the key/cert pem'
+  file:
+    path: '{{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_keycert.pem'
+    owner: 'root'
+    group: '{{ app__acme__os__cert_group }}'
+    mode: '0640'
+  when: ( acme_tiny__register_certificate | changed ) and ( acme_tiny__key.stat.isreg is defined and acme_tiny__key.stat.isreg )
 
