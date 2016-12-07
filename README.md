@@ -18,8 +18,6 @@ Why we do not use one of the existing roles?
 TODO
 ----
 
-* Finish merging of the resulting certificates
-* Adding a cron job to resign the certs every 60 days
 * Think about a way to use a proxy server and send around csr but no keys
 * Write a role to connect acme-tiny to different services directly
 
