@@ -48,8 +48,8 @@
   shell: 'cat {{ app__acme__tiny__certificate }} {{ app__acme__tiny__config_dir }}/intermediate.crt {{ app__acme__tiny__config_dir }}/ca.crt > {{ app__acme__tiny__cert_dir }}/{{ app__acme__tiny__cert_name }}_chain.crt'
   when: acme_tiny__register_certificate | changed
 
-# If now key is available, this means that the key is on a separate host and
-# this host must organize its cert chain after catching the cert here.
+# If no key is available, this means that the key is on a separate host and
+# that host must organize its cert chain after catching the cert here.
 - name: 'Test if a private key is available'
   stat:
     path: '{{ app__acme__tiny__key }}'
