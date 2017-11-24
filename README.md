@@ -15,11 +15,10 @@ Why we do not use one of the existing roles?
 * The role does not expose the private key file to the unpriviledged acme user
 * The cert-request might be done on a remote machine via zwischenloesung.acme-tiny-setup such that the private key is not even on the host requesting the certificate.
 
-TODO
-----
+STATUS
+------
 
-* Think about a way to use a proxy server and send around csr but no keys
-* Write a role to connect acme-tiny to different services directly
+Development has moved to inofix.acme-\*
 
 Promise
 -------
